@@ -11,9 +11,9 @@ find_package(catkin REQUIRED COMPONENTS
   controller_manager
   effort_controllers
   joint_state_controller
-  qt_robot_steering
   robot_state_publisher
   rqt_gui
+  rqt_robot_steering
 )
 
 ## System dependencies are found with CMake's conventions
@@ -108,7 +108,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES ptz_camera_control
-#  CATKIN_DEPENDS controller_manager effort_controllers joint_state_controller qt_robot_steering robot_state_publisher rqt_gui
+#  CATKIN_DEPENDS controller_manager effort_controllers joint_state_controller robot_state_publisher rqt_gui rqt_robot_steering
 #  DEPENDS system_lib
 )
 

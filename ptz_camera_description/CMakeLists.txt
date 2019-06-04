@@ -8,8 +8,9 @@ project(ptz_camera_description)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  rviz
+  urdf
   xacro
+  gazebo_ros
 )
 
 ## System dependencies are found with CMake's conventions
@@ -104,7 +105,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES ptz_camera_description
-#  CATKIN_DEPENDS rviz xacro
+#  CATKIN_DEPENDS urdf xacro
 #  DEPENDS system_lib
 )
 

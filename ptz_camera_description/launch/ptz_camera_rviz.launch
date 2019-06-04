@@ -1,0 +1,18 @@
+<launch>
+  <!-- these are the arguments you can pass this launch file, for example paused:=true -->
+ <arg name="model" default="$(find ptz_camera_description)/urdf/ptz_camera.xacro"/>
+ <arg name="rvizconfig" default="$(find ptz_camera_description)/launch/ptz_camera.rviz" />
+ rosparam set use_sim_time false
+ <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
+
+
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <param name="use_gui" value="TRUE"/>
+  </node>
+  <node pkg="robot_state_publisher" type="robot_state_publisher"  name="robot_state_publisher">
+    <param name="publish_frequency" type="double" value="30.0" />
+  </node>
+  <!-- Show in Rviz   -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
+
+</launch>

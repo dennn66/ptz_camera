@@ -1,0 +1,357 @@
+<?xml version="1.0"?>
+<!-- Revolute-Revolute Manipulator -->
+<robot name="ptz_camera" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:property name="mult" value="1" /> <!-- test -->
+
+  <!-- Constants for robot dimensions -->
+  <xacro:property name="PI" value="3.1415926535897931"/>
+  <xacro:property name="mass" value="${1*mult*mult*mult}" /> <!-- arbitrary value for mass -->
+  <xacro:property name="damping" value="0.7" /> <!-- arbitrary value for mass -->
+
+  <xacro:property name="gap_m" value="0.001" /> <!-- Square dimensions (widthxwidth) of beams -->
+  <xacro:property name="width_m" value="0.01" /> <!-- Square dimensions (widthxwidth) of beams -->
+  <xacro:property name="thickness_m" value="0.005" /> <!-- Square dimensions (widthxwidth) of beams -->
+  <xacro:property name="axel_offset_m" value="0.01" /> <!-- Space btw top of beam and the each joint -->
+  <xacro:property name="crank_to_arms_X_m" value="0.26616" /> <!-- Frame joints. Distance from crank joint to horizontal line between roker arms   -->
+  <xacro:property name="arm2_to_crankY_m" value="0.130" /> <!-- Frame joints. Distance from second (bottom) roker arm joint to crank joint    -->
+  <xacro:property name="arm1_to_crankY_m" value="0.06145" /> <!-- Frame joints. Distance from first (top) roker arm joint to crank joint    -->
+  <xacro:property name="connecting_rod_upper_len_m" value="0.288" /> <!-- Connecting_rod joints. Distance between crank and elbow joints -->
+  <xacro:property name="connecting_rod_lower_len_m" value="0.222" /> <!-- Connecting_rod joints. Distance between elbow and knee joints -->
+  <xacro:property name="crank_len_m" value="0.110" /> <!-- length of crank -->
+  <xacro:property name="first_rocket_arm_len_m" value="0.182" /> <!-- Rocket arms. Distance between frame and hip joints -->
+  <xacro:property name="leg_upper_len_m" value="0.265" /> <!-- Leg joints. Distance between hip and knee joints -->
+  <xacro:property name="leg_lower_len_m" value="0.490" /> <!-- Leg joints. Distance between knee joint and the end of the leg -->
+
+
+  <xacro:property name="gap" value="${gap_m*mult}" /> <!-- Square dimensions (widthxwidth) of beams -->
+  <xacro:property name="width" value="${width_m*mult}" /> <!-- Square dimensions (widthxwidth) of beams -->
+  <xacro:property name="thickness" value="${thickness_m*mult}" /> <!-- Square dimensions (widthxwidth) of beams -->
+  <xacro:property name="axel_offset" value="${axel_offset_m*mult}" /> <!-- Space btw top of beam and the each joint -->
+  <xacro:property name="crank_to_arms_X" value="${crank_to_arms_X_m*mult}" /> <!-- Frame joints. Distance from crank joint to horizontal line between roker arms   -->
+  <xacro:property name="arm2_to_crankY" value="${arm2_to_crankY_m*mult}" /> <!-- Frame joints. Distance from second (bottom) roker arm joint to crank joint    -->
+  <xacro:property name="arm1_to_crankY" value="${arm1_to_crankY_m*mult}" /> <!-- Frame joints. Distance from first (top) roker arm joint to crank joint    -->
+  <xacro:property name="connecting_rod_upper_len" value="${connecting_rod_upper_len_m*mult}" /> <!-- Connecting_rod joints. Distance between crank and elbow joints -->
+  <xacro:property name="connecting_rod_lower_len" value="${connecting_rod_lower_len_m*mult}" /> <!-- Connecting_rod joints. Distance between elbow and knee joints -->
+  <xacro:property name="crank_len" value="${crank_len_m*mult}" /> <!-- length of crank -->
+  <xacro:property name="first_rocket_arm_len" value="${first_rocket_arm_len_m*mult}" /> <!-- Rocket arms. Distance between frame and hip joints -->
+  <xacro:property name="leg_upper_len" value="${leg_upper_len_m*mult}" /> <!-- Leg joints. Distance between hip and knee joints -->
+  <xacro:property name="leg_lower_len" value="${leg_lower_len_m*mult}" /> <!-- Leg joints. Distance between knee joint and the end of the leg -->
+
+  
+  <xacro:property name="frame_width" value="${crank_to_arms_X}" /> <!-- frame width -->
+  <xacro:property name="frame_height" value="${arm1_to_crankY + arm2_to_crankY}" /> <!-- frame height -->
+
+
+  <xacro:property name="connecting_rod_angle" value="${(1-170/180)*PI}" /> <!-- Elbow angle. Angle between upper and lower parts of rod -->
+
+  <xacro:property name="second_rocket_arm_len" value="${arm2_to_crankY}" /> <!-- Rocket arms. Distance between frame and elbow joints -->
+  
+  <xacro:property name="leg_angle" value="${PI*(150/180)}" /> <!-- Knee angle. Angle between upper and lower parts of the leg -->
+
+
+  <!-- Import all Gazebo-customization elements, including Gazebo colors -->
+  <xacro:include filename="$(find ptz_camera_description)/urdf/ptz_camera.gazebo" />
+  <!-- Import Rviz colors -->
+  <xacro:include filename="$(find ptz_camera_description)/urdf/materials.xacro" />
+
+  <!-- Used for fixing robot to Gazebo 'base_link' -->
+  <link name="world"/>
+
+  <joint name="fixed" type="fixed">
+    <parent link="world"/>
+    <child link="frame"/>
+    <origin xyz="0 0 ${leg_lower_len}" rpy="0 0 0"/>
+
+  </joint>
+
+  <!-- Base Link -->
+  <link name="frame">
+    <visual>
+      <origin xyz="0 0 ${frame_height/2}" rpy="0 0 0"/>
+      <geometry>
+	<box size="${frame_width+2*axel_offset} ${thickness} ${frame_height+2*axel_offset}"/>
+      </geometry>
+        <material name="">
+          <color rgba="255 0 10 1.0"/>
+        </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 ${frame_height/2}" rpy="0 0 0"/>
+      <geometry>
+	<box size="${frame_width+2*axel_offset} ${thickness} ${frame_height+2*axel_offset}"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin xyz="0 0 ${frame_height/2}" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (thickness*thickness + (frame_height+2*axel_offset)*(frame_height+2*axel_offset))}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * ((frame_height+2*axel_offset)*(frame_height+2*axel_offset) + (frame_width+2*axel_offset)*(frame_width+2*axel_offset))}" iyz="0.0"
+	  izz="${mass / 12.0 * ((frame_width+2*axel_offset)*(frame_width+2*axel_offset) + thickness*thickness)}"/>
+    </inertial>
+  </link>
+
+  <!-- crank -->
+
+  <joint name="crank_joint" type="continuous">
+    <parent link="frame"/>
+    <child link="crank"/>
+    <origin xyz="${-crank_to_arms_X/2} ${thickness+gap} ${arm2_to_crankY}" rpy="0 1.63 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="${damping}"/>
+  </joint>
+
+  <link name="crank">
+    <visual>
+      <origin xyz="0 0 ${crank_len/2}" rpy="0 0 0"/>
+      <geometry>
+	<box size="${width} ${thickness} ${crank_len+2*axel_offset}"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 ${crank_len/2}" rpy="0 0 0"/>
+      <geometry>
+	<box size="${width} ${thickness} ${crank_len+2*axel_offset}"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin xyz="0 0 ${crank_len/2+2*axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (thickness*thickness + (crank_len+2*axel_offset)*(crank_len+2*axel_offset))}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * ((crank_len+2*axel_offset)*(crank_len+2*axel_offset) + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + thickness*thickness)}"/>
+    </inertial>
+  </link>
+
+
+<!--first_rocket_arm -->
+
+  <joint name="first_rocket_arm_joint" type="continuous">
+    <parent link="frame"/>
+    <child link="first_rocket_arm"/>
+    <origin xyz="${crank_to_arms_X/2} ${2*thickness+2*gap} ${frame_height}" rpy="0 1.27 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="${damping}"/>
+  </joint>
+
+  <link name="first_rocket_arm">
+    <visual>
+      <origin xyz="0 0 ${first_rocket_arm_len/2}" rpy="0 0 0"/>
+      <geometry>
+	<box size="${width} ${thickness} ${first_rocket_arm_len+2*axel_offset}"/>
+      </geometry>
+      <material name="green"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 ${first_rocket_arm_len/2}" rpy="0 0 0"/>
+      <geometry>
+	<box size="${width} ${thickness} ${first_rocket_arm_len+2*axel_offset}"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin xyz="0 0 ${first_rocket_arm_len/2}" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (thickness*thickness + (first_rocket_arm_len+2*axel_offset)*(first_rocket_arm_len+2*axel_offset))}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * ((first_rocket_arm_len+2*axel_offset)*(first_rocket_arm_len+2*axel_offset) + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + thickness*thickness)}"/>
+    </inertial>
+  </link>
+
+<!--second_rocket_arm -->
+
+  <joint name="second_rocket_arm_joint" type="continuous">
+    <parent link="frame"/>
+    <child link="second_rocket_arm"/>
+    <origin xyz="${crank_to_arms_X/2} ${thickness+gap} 0" rpy="0 1.13 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="${damping}"/>
+  </joint>
+
+  <link name="second_rocket_arm">
+    <visual>
+      <origin xyz="0 0 ${second_rocket_arm_len/2}" rpy="0 0 0"/>
+      <geometry>
+	<box size="${width} ${thickness} ${second_rocket_arm_len+2*axel_offset}"/>
+      </geometry>
+        <material name="">
+            <color rgba="100 100 0 1.0"/>
+        </material>
+    </visual>
+
+
+    <collision>
+      <origin xyz="0 0 ${second_rocket_arm_len/2}" rpy="0 0 0"/>
+      <geometry>
+	<box size="${width} ${thickness} ${second_rocket_arm_len+2*axel_offset}"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin xyz="0 0 ${second_rocket_arm_len/2}" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (thickness*thickness + (second_rocket_arm_len+2*axel_offset)*(second_rocket_arm_len+2*axel_offset))}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * ((second_rocket_arm_len+2*axel_offset)*(second_rocket_arm_len+2*axel_offset) + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + thickness*thickness)}"/>
+    </inertial>
+
+  </link>
+
+<!--connecting_rod -->
+
+ <joint name="crank_shaft" type="continuous">
+    <parent link="crank"/>
+    <child link="connecting_rod_upper"/>
+    <origin xyz="0 ${thickness+gap} ${crank_len}" rpy="0 0.17 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="${damping}"/>
+  </joint>
+
+  <link name="connecting_rod_upper">
+    <visual>
+      <origin xyz="0 0 ${connecting_rod_upper_len/2}" rpy="0 0 0"/>
+      <geometry>
+	<box size="${width} ${thickness} ${connecting_rod_upper_len+2*axel_offset}"/>
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 ${connecting_rod_upper_len/2}" rpy="0 0 0"/>
+      <geometry>
+	<box size="${width} ${thickness} ${connecting_rod_upper_len+2*axel_offset}"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin xyz="0 0 ${connecting_rod_upper_len/2}" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (thickness*thickness + (connecting_rod_upper_len+2*axel_offset)*(connecting_rod_upper_len+2*axel_offset))}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * ((connecting_rod_upper_len+2*axel_offset)*(connecting_rod_upper_len+2*axel_offset) + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + thickness*thickness)}"/>
+    </inertial>
+
+  </link>
+
+ <joint name="elbow_joint" type="fixed">
+    <parent link="connecting_rod_upper"/>
+    <child link="connecting_rod_lower"/>
+    <origin xyz="0 0 ${connecting_rod_upper_len}" rpy="0 ${-connecting_rod_angle} 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <link name="connecting_rod_lower">
+    <visual>
+      <origin xyz="0 0 ${connecting_rod_lower_len/2}" rpy="0 0 0"/>
+      <geometry>
+	<box size="${width} ${thickness} ${connecting_rod_lower_len+2*axel_offset}"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 ${connecting_rod_lower_len/2}" rpy="0 0 0"/>
+      <geometry>
+	<box size="${width} ${thickness} ${connecting_rod_lower_len+2*axel_offset}"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin xyz="0 0 ${connecting_rod_lower_len/2}" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (thickness*thickness + (connecting_rod_lower_len+2*axel_offset)*(connecting_rod_lower_len+2*axel_offset))}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * ((connecting_rod_lower_len+2*axel_offset)*(connecting_rod_lower_len+2*axel_offset) + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + thickness*thickness)}"/>
+    </inertial>
+  </link>
+
+<!--leg -->
+ <joint name="knee_joint" type="continuous">
+    <parent link="connecting_rod_lower"/>
+    <child link="leg_upper"/>
+    <origin xyz="0 ${-thickness-gap} ${connecting_rod_lower_len}" rpy="0 -2.35 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="${damping}"/>
+  </joint>
+
+  <link name="leg_upper">
+    <visual>
+      <origin xyz="0 0 ${leg_upper_len/2}" rpy="0 0 0"/>
+      <geometry>
+	<box size="${-width} ${thickness} ${leg_upper_len+2*axel_offset}"/>
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 ${leg_upper_len/2}" rpy="0 0 0"/>
+      <geometry>
+	<box size="${-width} ${thickness} ${leg_upper_len+2*axel_offset}"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin xyz="0 0 ${leg_upper_len/2}" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (thickness*thickness + (leg_upper_len+2*axel_offset)*(leg_upper_len+2*axel_offset))}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * ((leg_upper_len+2*axel_offset)*(leg_upper_len+2*axel_offset) + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + thickness*thickness)}"/>
+    </inertial>
+  </link>
+
+ <joint name="leg_joint" type="fixed">
+    <!--parent link="second_rocket_arm"/-->
+    <parent link="leg_upper"/>
+    <child link="leg_lower"/>
+    <origin xyz="0 0 0" rpy="0 ${-leg_angle} 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <link name="leg_lower">
+    <visual>
+      <origin xyz="0 0 ${leg_lower_len/2}" rpy="0 0 0"/>
+      <geometry>
+	<box size="${width} ${thickness} ${leg_lower_len+2*axel_offset}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 ${leg_lower_len/2}" rpy="0 0 0"/>
+      <geometry>
+	<box size="${width} ${thickness} ${leg_lower_len+2*axel_offset}"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin xyz="0 0 ${leg_lower_len/2}" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (thickness*thickness + (leg_lower_len+2*axel_offset)*leg_lower_len)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (leg_lower_len*leg_lower_len + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + thickness*thickness)}"/>
+    </inertial>
+  </link>
+  <transmission name="tran1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="crank_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor1">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+</robot>

@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   gazebo_ros_control
   ptz_camera_control
   ptz_camera_description
+  xacro
 )
 
 ## System dependencies are found with CMake's conventions
@@ -107,7 +108,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES ptz_camera_gazebo
-#  CATKIN_DEPENDS gazebo_plugins gazebo_ros gazebo_ros_control ptz_camera_control ptz_camera_description
+#  CATKIN_DEPENDS gazebo_plugins gazebo_ros gazebo_ros_control ptz_camera_control ptz_camera_description xacro
 #  DEPENDS system_lib
 )
 

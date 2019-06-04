@@ -4,12 +4,18 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /Status1
+        - /Grid1
+        - /RobotModel1
         - /RobotModel1/Links1
-        - /RobotModel1/Links1/crank1
+        - /RobotModel1/Links1/base_link1
+        - /RobotModel1/Links1/camera1
+        - /RobotModel1/Links1/eye1
         - /RobotModel1/Links1/frame1
-        - /RobotModel1/Links1/world1
+        - /RobotModel1/Links1/head1
         - /TF1
         - /TF1/Frames1
+        - /TF1/Tree1
         - /Axes1
       Splitter Ratio: 0.5
     Tree Height: 643
@@ -55,7 +61,7 @@ Visualization Manager:
         Z: 0
       Plane: XY
       Plane Cell Count: 10
-      Reference Frame: world
+      Reference Frame: base_link
       Value: true
     - Alpha: 1
       Class: rviz/RobotModel
@@ -67,50 +73,30 @@ Visualization Manager:
         Expand Link Details: true
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        connecting_rod_lower:
+        base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: true
+        camera:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        connecting_rod_upper:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        crank:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        first_rocket_arm:
+        eye:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
         frame:
           Alpha: 1
-          Show Axes: true
-          Show Trail: true
-          Value: true
-        leg_lower:
-          Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        leg_upper:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        second_rocket_arm:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        world:
+        head:
           Alpha: 1
           Show Axes: true
-          Show Trail: true
+          Show Trail: false
+          Value: true
       Name: RobotModel
       Robot Description: robot_description
       TF Prefix: ""
@@ -118,60 +104,31 @@ Visualization Manager:
       Value: true
       Visual Enabled: true
     - Class: rviz/TF
-      Enabled: true
+      Enabled: false
       Frame Timeout: 15
       Frames:
-        All Enabled: false
-        connecting_rod_lower:
-          Value: true
-        connecting_rod_upper:
-          Value: true
-        crank:
-          Value: true
-        first_rocket_arm:
-          Value: true
-        frame:
-          Value: false
-        leg_lower:
-          Value: true
-        leg_upper:
-          Value: true
-        second_rocket_arm:
-          Value: true
-        world:
-          Value: false
+        All Enabled: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: true
       Tree:
-        world:
-          frame:
-            crank:
-              connecting_rod_upper:
-                connecting_rod_lower:
-                  leg_upper:
-                    leg_lower:
-                      {}
-            first_rocket_arm:
-              {}
-            second_rocket_arm:
-              {}
+        {}
       Update Interval: 0
-      Value: true
+      Value: false
     - Class: rviz/Axes
       Enabled: true
-      Length: 10
+      Length: 1
       Name: Axes
-      Radius: 0.009999999776482582
-      Reference Frame: world
+      Radius: 0.004999999888241291
+      Reference Frame: <Fixed Frame>
       Value: true
   Enabled: true
   Global Options:
-    Background Color: 238; 238; 238
+    Background Color: 238; 238; 236
     Default Light: true
-    Fixed Frame: world
+    Fixed Frame: base_link
     Frame Rate: 30
   Name: root
   Tools:
@@ -195,7 +152,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 3.648641586303711
+      Distance: 3.231349468231201
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -210,10 +167,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.09979759901762009
+      Pitch: 0.03979816660284996
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.3871995210647583
+      Yaw: 0.8971999883651733
     Saved: ~
 Window Geometry:
   Displays:

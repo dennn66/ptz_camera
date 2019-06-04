@@ -36,12 +36,12 @@
   <xacro:include filename="$(find ptz_camera_description)/urdf/materials.xacro" />
 
   <!-- Used for fixing robot to Gazebo 'base_link' -->
-  <link name="base_link"/>
+  <link name="world"/>
 
   <joint name="fixed" type="fixed">
-    <parent link="base_link"/>
+    <parent link="world"/>
     <child link="frame"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <origin xyz="0 0 ${frame_height/2.0}" rpy="0 0 0"/>
 
   </joint>
 
@@ -73,12 +73,13 @@
 	  izz="${mass /  2.0 * (frame_radius*frame_radius)}"/>
     </inertial>
   </link>
+
   <!-- nec -->
 
   <joint name="nec_joint" type="continuous">
     <parent link="frame"/>
     <child link="head"/>
-    <origin xyz="0 0 ${frame_height}" rpy="0 0 0"/>
+    <origin xyz="0 ${head_height/2} 0" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
     <dynamics damping="${damping}"/>
   </joint>
@@ -111,19 +112,20 @@
     </inertial>
   </link>
 
+
 <!--eye -->
 
   <joint name="eye_joint" type="continuous">
     <parent link="head"/>
     <child link="eye"/>
-    <origin xyz="0 0 ${eye_radius+head_height}" rpy="0 0 0"/>
+    <origin xyz="0 0 ${eye_radius}" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <dynamics damping="${damping}"/>
   </joint>
 
   <link name="eye">
     <visual>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <origin xyz="0 0 ${eye_radius}" rpy="0 0 0"/>
       <geometry>
 	<sphere  radius="${eye_radius}"/>
       </geometry>
@@ -131,35 +133,35 @@
     </visual>
 
     <collision>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <origin xyz="0 0 ${eye_radius}" rpy="0 0 0"/>
       <geometry>
 	<sphere  radius="${eye_radius}"/>
       </geometry>
     </collision>
 
     <inertial>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <origin xyz="0 0 ${eye_radius}" rpy="0 0 0"/>
       <mass value="${mass}"/>
       <inertia
 	  ixx="${mass * 2.0 /  5.0 * (eye_radius*eye_radius)}" ixy="0.0" ixz="0.0"
 	  iyy="${mass * 2.0 /  5.0 * (eye_radius*eye_radius)}" iyz="0.0"
 	  izz="${mass * 2.0 /  5.0 * (eye_radius*eye_radius)}"/>
     </inertial>
-
   </link>
+
 <!--camera -->
 
   <joint name="camera_joint" type="fixed">
     <parent link="eye"/>
     <child link="camera"/>
-    <origin xyz="${eye_radius} 0 0 " rpy="0 0 0"/>
+    <origin xyz=" 0 ${camera_width/2} 0" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <dynamics damping="${damping}"/>
   </joint>
 
   <link name="camera">
     <visual>
-     <origin xyz=" 0 0 0 " rpy="0 0 0"/>
+      <origin xyz="0 0 ${camera_width/2}" rpy="0 0 0"/>
       <geometry>
 	<box size="${camera_width} ${camera_width} ${camera_width}"/>
       </geometry>
@@ -170,14 +172,14 @@
 
 
     <collision>
-     <origin xyz=" 0 0 0 " rpy="0 0 0"/>
+     <origin xyz="0 0 ${camera_width/2}" rpy="0 0 0"/>
       <geometry>
 	<box size="${camera_width} ${camera_width} ${camera_width}"/>
       </geometry>
     </collision>
 
     <inertial>
-     <origin xyz="0 0 0" rpy="0 0 0"/>
+     <origin xyz="0 0 ${camera_width/2}" rpy="0 0 0"/>
       <mass value="${mass}"/>
       <inertia
 	  ixx="${mass / 6.0 * (camera_width*camera_width)}" ixy="0.0" ixz="0.0"
@@ -185,11 +187,18 @@
 	  izz="${mass / 6.0 * (camera_width*camera_width)}"/>
     </inertial>
 
-
-
-
   </link>
 
 
+  <transmission name="tran1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="nec_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor1">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
 
 </robot>
